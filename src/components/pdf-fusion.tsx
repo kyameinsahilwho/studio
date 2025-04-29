@@ -9,9 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Merge, Settings, Download, Trash2, ArrowLeftRight, ArrowUpDown, Rows, Columns } from 'lucide-react';
+import { Upload, Merge, Settings, Download, Trash2, ArrowLeftRight, ArrowUpDown, Rows, Columns, Grid } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GridSelector } from './grid-selector';
 
 
 interface PdfFile {
@@ -330,6 +330,11 @@ export function PdfFusion() {
       }
     };
 
+   const handleGridChange = (newRows: number, newCols: number) => {
+     setRows(newRows);
+     setCols(newCols);
+   };
+
 
   return (
     <Tabs defaultValue="merge" className="w-full max-w-4xl mx-auto">
@@ -500,37 +505,18 @@ export function PdfFusion() {
 
                {/* Grid Size Options */}
                 <div className="space-y-3">
-                   <Label className="text-base font-medium flex items-center gap-2"><ArrowUpDown className="w-5 h-5 text-primary" /> Grid Size (Pages per Sheet)</Label>
-                   <div className="flex items-center space-x-4">
-                        <div className="flex items-center gap-2">
-                             <Label htmlFor="rows" className="shrink-0 flex items-center gap-1"><Rows className="w-4 h-4"/> Rows:</Label>
-                              <Select value={String(rows)} onValueChange={(value) => setRows(parseInt(value, 10) || 1)}>
-                                  <SelectTrigger id="rows" className="w-[80px]">
-                                    <SelectValue placeholder="Rows" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                                      <SelectItem key={num} value={String(num)}>{num}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                        </div>
-                         <div className="flex items-center gap-2">
-                              <Label htmlFor="cols" className="shrink-0 flex items-center gap-1"><Columns className="w-4 h-4"/> Columns:</Label>
-                               <Select value={String(cols)} onValueChange={(value) => setCols(parseInt(value, 10) || 1)}>
-                                   <SelectTrigger id="cols" className="w-[80px]">
-                                     <SelectValue placeholder="Cols" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                                       <SelectItem key={num} value={String(num)}>{num}</SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                         </div>
-                   </div>
-                    <p className="text-xs text-muted-foreground">Total pages per sheet: {rows * cols}</p>
-                </div>
+                     <Label className="text-base font-medium flex items-center gap-2"><Grid className="w-5 h-5 text-primary" /> Grid Size (Pages per Sheet)</Label>
+                     <GridSelector
+                        initialRows={rows}
+                        initialCols={cols}
+                        maxRows={8}
+                        maxCols={8}
+                        onChange={handleGridChange}
+                     />
+                     <p className="text-xs text-muted-foreground text-center md:text-left mt-2">
+                         Selected: {rows} {rows > 1 ? 'Rows' : 'Row'} x {cols} {cols > 1 ? 'Columns' : 'Column'} ({rows * cols} pages/sheet)
+                     </p>
+                 </div>
             </div>
 
             {processing && (
