@@ -19,7 +19,15 @@ import { BlogPostPage } from '@/components/blog-post';
 import { Toaster } from './shims/toaster';
 import { TOOL_REGISTRY, CATEGORIES, type CategoryId, type ToolDef } from '@/lib/tools-data';
 import { getToolSeoContent } from '@/lib/tool-seo';
-import { useSeoHead } from '@/lib/seo-helper';
+import {
+  useSeoHead,
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+  buildWebApplicationSchema,
+  buildHowToSchema,
+  buildFaqSchema,
+  buildBreadcrumbSchema,
+} from '@/lib/seo-helper';
 import { fetchTools } from './api/tools';
 import { ShieldCheck, Table as TableIcon, LayoutGrid, FileText, ArrowLeft } from 'lucide-react';
 
@@ -243,14 +251,10 @@ function HomePage() {
     canonicalUrl: 'https://codingmarvel.com/',
     jsonLd: {
       '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'Love for PDF',
-      url: 'https://codingmarvel.com/',
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: 'https://codingmarvel.com/sitemap?q={search_term_string}',
-        'query-input': 'required name=search_term_string',
-      },
+      '@graph': [
+        buildWebSiteSchema(),
+        buildOrganizationSchema(),
+      ],
     },
   });
 
@@ -311,17 +315,15 @@ function ToolWorkspacePage() {
     canonicalUrl: `https://codingmarvel.com/${tool.slug}`,
     jsonLd: {
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: tool.name,
-      description: tool.desc,
-      url: `https://codingmarvel.com/${tool.slug}`,
-      applicationCategory: 'UtilityApplication',
-      operatingSystem: 'All',
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
+      '@graph': [
+        buildWebApplicationSchema(tool),
+        buildHowToSchema(tool.name, seo.steps),
+        buildFaqSchema(seo.faq),
+        buildBreadcrumbSchema([
+          { name: 'Home', url: '/' },
+          { name: tool.name, url: `/${tool.slug}` },
+        ]),
+      ],
     },
   });
 

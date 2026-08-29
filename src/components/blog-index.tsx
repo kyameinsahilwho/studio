@@ -4,7 +4,7 @@ import { HydrationBoundary, type DehydratedState } from '@tanstack/react-query';
 import { Header } from './header';
 import { useBlogPosts, usePrefetchBlogPost } from '@/hooks/use-blogs';
 import { BLOG_POSTS } from '@/lib/blogs-data';
-import { useSeoHead } from '@/lib/seo-helper';
+import { useSeoHead, buildCollectionPageSchema, buildBreadcrumbSchema } from '@/lib/seo-helper';
 import { BookOpen, Search, Clock, ArrowRight, Loader2 } from 'lucide-react';
 
 interface BlogIndexPageProps {
@@ -26,6 +26,20 @@ function BlogIndexContent() {
     title: 'PDF Guides & Competitor Comparisons | Love for PDF Blog',
     description: 'Technical guides, security best practices, and honest feature comparisons evaluating Love for PDF against iLovePDF, Smallpdf, Adobe Acrobat, and Sejda.',
     canonicalUrl: 'https://codingmarvel.com/blog',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        buildCollectionPageSchema({
+          name: 'PDF Guides & Competitor Comparisons | Love for PDF Blog',
+          description: 'Technical guides, security best practices, and honest feature comparisons evaluating Love for PDF against iLovePDF, Smallpdf, Adobe Acrobat, and Sejda.',
+          url: 'https://codingmarvel.com/blog',
+        }),
+        buildBreadcrumbSchema([
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+        ]),
+      ],
+    },
   });
 
   return (

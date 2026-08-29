@@ -143,3 +143,143 @@ export function useSeoHead(props: SeoProps) {
   }, [serializedProps]);
 }
 
+// ==========================================
+// Schema.org JSON-LD Builders
+// ==========================================
+
+export const SITE_URL = 'https://codingmarvel.com';
+export const SITE_NAME = 'Love for PDF';
+export const SITE_LOGO = 'https://codingmarvel.com/favicon.svg';
+
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export interface HowToStepItem {
+  name: string;
+  text: string;
+}
+
+export interface FaqEntry {
+  question: string;
+  answer: string;
+}
+
+export function buildOrganizationSchema() {
+  return {
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: SITE_LOGO,
+    },
+    sameAs: [],
+  };
+}
+
+export function buildWebSiteSchema() {
+  return {
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    url: SITE_URL,
+    name: SITE_NAME,
+    description: 'Complete Client-Side PDF Toolkit. 100% Free, Private & Secure PDF Tools running entirely in your browser.',
+    publisher: {
+      '@id': `${SITE_URL}/#organization`,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/sitemap?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+export function buildBreadcrumbSchema(items: BreadcrumbItem[]) {
+  return {
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
+    })),
+  };
+}
+
+export function buildWebApplicationSchema(tool: {
+  name: string;
+  desc: string;
+  slug: string;
+  category?: string;
+}) {
+  return {
+    '@type': 'WebApplication',
+    '@id': `${SITE_URL}/${tool.slug}#webapp`,
+    name: tool.name,
+    description: tool.desc,
+    url: `${SITE_URL}/${tool.slug}`,
+    applicationCategory: 'UtilityApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript and HTML5 canvas/WASM support',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+  };
+}
+
+export function buildHowToSchema(title: string, steps: string[]) {
+  return {
+    '@type': 'HowTo',
+    name: `How to use ${title}`,
+    step: steps.map((stepText, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: `Step ${index + 1}`,
+      text: stepText,
+    })),
+  };
+}
+
+export function buildFaqSchema(faqItems: FaqEntry[]) {
+  return {
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}
+
+export function buildCollectionPageSchema({
+  name,
+  description,
+  url,
+}: {
+  name: string;
+  description: string;
+  url: string;
+}) {
+  return {
+    '@type': 'CollectionPage',
+    '@id': `${url}#webpage`,
+    url,
+    name,
+    description,
+    isPartOf: {
+      '@id': `${SITE_URL}/#website`,
+    },
+  };
+}
