@@ -5,7 +5,7 @@ import { Header } from './header';
 import { MarkdownRenderer } from './markdown-renderer';
 import { useBlogPost } from '@/hooks/use-blogs';
 import { TOOL_REGISTRY } from '@/lib/tools-data';
-import { useSeoHead } from '@/lib/seo-helper';
+import { useSeoHead, buildBreadcrumbSchema } from '@/lib/seo-helper';
 import { Clock, Calendar, User, ArrowLeft, ExternalLink, Zap } from 'lucide-react';
 
 interface BlogPostPageProps {
@@ -37,32 +37,41 @@ function BlogPostContent() {
     jsonLd: post
       ? {
           '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `https://codingmarvel.com/blog/${post.slug}`,
-          },
-          headline: post.title,
-          description: post.excerpt,
-          image: [articleOgImage],
-          datePublished: post.publishedAt,
-          dateModified: post.publishedAt,
-          author: {
-            '@type': 'Organization',
-            name: post.author,
-            url: 'https://codingmarvel.com',
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: 'Love for PDF',
-            url: 'https://codingmarvel.com',
-            logo: {
-              '@type': 'ImageObject',
-              url: 'https://codingmarvel.com/favicon.svg',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': `https://codingmarvel.com/blog/${post.slug}`,
+              },
+              headline: post.title,
+              description: post.excerpt,
+              image: [articleOgImage],
+              datePublished: post.publishedAt,
+              dateModified: post.publishedAt,
+              author: {
+                '@type': 'Organization',
+                name: post.author,
+                url: 'https://codingmarvel.com',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Love for PDF',
+                url: 'https://codingmarvel.com',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://codingmarvel.com/favicon.svg',
+                },
+              },
+              keywords: post.tags.join(', '),
+              articleSection: post.category,
             },
-          },
-          keywords: post.tags.join(', '),
-          articleSection: post.category,
+            buildBreadcrumbSchema([
+              { name: 'Home', url: '/' },
+              { name: 'Blog', url: '/blog' },
+              { name: post.title, url: `/blog/${post.slug}` },
+            ]),
+          ],
         }
       : undefined,
   });

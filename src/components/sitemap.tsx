@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Header } from './header';
 import { TOOL_REGISTRY, CATEGORIES } from '@/lib/tools-data';
 import { BLOG_POSTS } from '@/lib/blogs-data';
-import { useSeoHead } from '@/lib/seo-helper';
+import { useSeoHead, buildCollectionPageSchema, buildBreadcrumbSchema } from '@/lib/seo-helper';
 import { Map, FileText, Search, ExternalLink, Code, Layers } from 'lucide-react';
 
 export function SitemapPage() {
@@ -14,6 +14,20 @@ export function SitemapPage() {
     title: 'Complete Sitemap & Tools Directory | Love for PDF',
     description: 'Full directory listing all 35+ browser-based PDF tools, category guides, and technical comparison articles.',
     canonicalUrl: 'https://codingmarvel.com/sitemap',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        buildCollectionPageSchema({
+          name: 'Complete Sitemap & Tools Directory | Love for PDF',
+          description: 'Full directory listing all 35+ browser-based PDF tools, category guides, and technical comparison articles.',
+          url: 'https://codingmarvel.com/sitemap',
+        }),
+        buildBreadcrumbSchema([
+          { name: 'Home', url: '/' },
+          { name: 'Sitemap', url: '/sitemap' },
+        ]),
+      ],
+    },
   });
 
   const filteredTools = TOOL_REGISTRY.filter(
